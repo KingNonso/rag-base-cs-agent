@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101828">
+  <title>Grounded — customer support, with receipts</title>
+  <meta name="description" content="A document-grounded customer support assistant prototype with source citations and honest fallbacks.">
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; background: #f7f8f5; color: #17202d; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .shell { max-width: 1200px; padding: 0 28px; margin: auto; }
+    header { background: #101828; color: #f8fafc; }
+    nav { height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { font-weight: 800; letter-spacing: -.045em; font-size: 1.32rem; text-decoration: none; }
+    .brand span { color: #93e2b7; }
+    .navlinks { display: flex; gap: 24px; align-items: center; font-size: .9rem; color: #cbd5e1; }
+    .navlinks a { text-decoration: none; }
+    .navlinks a:hover { color: white; }
+    .hero { padding: 72px 0 82px; display: grid; grid-template-columns: 1fr 390px; gap: 58px; align-items: center; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .17em; font-size: .72rem; font-weight: 800; color: #93e2b7; }
+    h1 { font-size: clamp(2.9rem, 6vw, 5rem); line-height: 1.04; letter-spacing: -.065em; margin: 18px 0 24px; max-width: 750px; }
+    .hero p { color: #c5cfdd; font-size: 1.1rem; line-height: 1.7; max-width: 570px; }
+    .hero-actions { display: flex; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+    .button { border-radius: 10px; padding: 13px 19px; font-size: .92rem; font-weight: 700; text-decoration: none; border: 1px solid transparent; display: inline-block; }
+    .button.primary { background: #99e5ba; color: #10261b; }
+    .button.secondary { border-color: #506070; color: white; }
+    .hero-card { border: 1px solid #344255; background: #182538; border-radius: 20px; padding: 25px; box-shadow: 0 22px 70px #050e1b50; }
+    .hero-card .top { display: flex; align-items: center; gap: 9px; font-size: .78rem; color: #b8c7d9; }
+    .dot { width: 8px; height: 8px; background: #98e8b8; border-radius: 50%; }
+    .hero-card .sample-q { border: 1px solid #34465c; border-radius: 12px; padding: 14px; margin: 25px 0 16px; color: #e6edf6; }
+    .hero-card .sample-a { background: #233b3d; border-radius: 12px; padding: 18px; color: #e6f9ee; line-height: 1.55; }
+    .hero-card .source { display: inline-block; color: #b9edcb; font-size: .76rem; margin-top: 13px; }
+    main { padding: 70px 0 85px; }
+    .section-heading { max-width: 660px; margin-bottom: 30px; }
+    .section-heading h2 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.05em; line-height: 1.1; margin: 10px 0; }
+    .section-heading p { color: #5c6878; line-height: 1.65; }
+    .demo { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+    .panel { background: #fff; border: 1px solid #e1e5e1; border-radius: 17px; box-shadow: 0 8px 26px #263b2808; }
+    .sidebar { padding: 24px; }
+    .sidebar h3 { margin: 0 0 8px; font-size: 1rem; }
+    .sidebar p { font-size: .83rem; color: #667280; line-height: 1.55; }
+    .suggestions { display: grid; gap: 9px; margin-top: 20px; }
+    .suggestions button { border: 1px solid #dbe3de; background: #f7faf7; color: #283b34; border-radius: 9px; padding: 11px; text-align: left; font-size: .82rem; line-height: 1.4; }
+    .suggestions button:hover, .suggestions button:focus-visible { border-color: #3d8665; background: #eef8f1; }
+    .chat { min-height: 470px; display: flex; flex-direction: column; overflow: hidden; }
+    .chat-head { padding: 18px 22px; border-bottom: 1px solid #e7eae6; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .chat-head strong { font-size: .95rem; }
+    .badge { color: #326c4a; background: #e8f6eb; border-radius: 40px; font-size: .72rem; font-weight: 700; padding: 6px 10px; }
+    .messages { flex: 1; padding: 25px; display: flex; flex-direction: column; gap: 15px; min-height: 320px; }
+    .message { max-width: 90%; padding: 14px 17px; border-radius: 14px; line-height: 1.6; font-size: .91rem; white-space: pre-wrap; }
+    .message.assistant { background: #f2f5f1; align-self: flex-start; }
+    .message.user { background: #172c22; color: white; align-self: flex-end; }
+    .references { align-self: flex-start; display: flex; gap: 8px; flex-wrap: wrap; margin-top: -6px; }
+    .references button { border: 1px solid #cee3d3; border-radius: 20px; background: #f5fbf6; color: #34684a; font-size: .75rem; padding: 6px 10px; }
+    .chat-form { padding: 17px; border-top: 1px solid #e7eae6; display: flex; gap: 9px; }
+    .chat-form input { flex: 1; min-width: 0; border: 1px solid #d9dfda; border-radius: 9px; padding: 12px 13px; outline: none; }
+    .chat-form input:focus { border-color: #378e61; box-shadow: 0 0 0 3px #a5dfb35b; }
+    .chat-form button { border: 0; background: #172c22; color: #fff; border-radius: 9px; padding: 0 19px; font-weight: 700; }
+    .note { color: #647182; font-size: .8rem; margin: 12px 0 0; }
+    details { margin-top: 26px; background: #fff; border: 1px solid #e1e5e1; border-radius: 13px; padding: 18px 22px; }
+    summary { cursor: pointer; font-weight: 700; }
+    .connect-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-top: 18px; align-items: end; }
+    label { display: grid; gap: 6px; font-size: .78rem; color: #5a6774; font-weight: 700; }
+    label input { border: 1px solid #d6dfd8; padding: 11px; border-radius: 8px; width: 100%; }
+    .connect-grid button { padding: 12px 16px; border: 0; border-radius: 8px; background: #172c22; color: white; font-weight: 700; }
+    .features { margin-top: 75px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .feature { padding: 25px; }
+    .feature .number { font-size: .76rem; color: #328558; font-weight: 800; }
+    .feature h3 { margin: 15px 0 8px; }
+    .feature p { color: #627080; line-height: 1.6; font-size: .9rem; }
+    footer { border-top: 1px solid #e0e5df; padding: 28px 0 40px; color: #667280; font-size: .85rem; }
+    footer .shell { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    @media (max-width: 800px) { .hero { grid-template-columns: 1fr; padding: 55px 0; } .hero-card { max-width: 520px; } .demo { grid-template-columns: 1fr; } .features { grid-template-columns: 1fr; } .connect-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 550px) { .shell { padding: 0 18px; } .navlinks { gap: 12px; font-size: .8rem; } .navlinks a:first-child { display: none; } .messages { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell">
+      <nav><a class="brand" href="#top">grounded<span>.</span></a><div class="navlinks"><a href="#how">How it works</a><a href="#demo">Try the demo</a><a href="https://github.com/KingNonso/rag-base-cs-agent">GitHub ↗</a></div></nav>
+      <div class="hero" id="top">
+        <div><div class="eyebrow">Public prototype · RAG support assistant</div><h1>Answers your customers can trace back.</h1><p>Turn scattered documents into useful support answers. Every answer points to its source, and the assistant says when the knowledge base comes up short.</p><div class="hero-actions"><a class="button primary" href="#demo">Try the sample assistant</a><a class="button secondary" href="https://github.com/KingNonso/rag-base-cs-agent#readme">View the code ↗</a></div></div>
+        <div class="hero-card" aria-hidden="true"><div class="top"><span class="dot"></span> Evidence-backed response</div><div class="sample-q">Can any user export tickets?</div><div class="sample-a">Only account administrators can export tickets as CSV.<br><span class="source">↗ Acme Desk product guide · document</span></div></div>
+      </div>
+    </div>
+  </header>
+  <main class="shell">
+    <section id="demo"><div class="section-heading"><div class="eyebrow" style="color:#328558">Interactive preview</div><h2>Ask a question. See the source.</h2><p>This preview uses fictional product and policy fixtures. Its sample mode shows prepared answers; connect your own deployed FastAPI backend to make live RAG requests.</p></div>
+      <div class="demo"><aside class="panel sidebar"><h3>Try a sample question</h3><p>Choose one below or type your own. Questions outside the sample documents show the fallback.</p><div class="suggestions"><button type="button" data-question="How many agents does Basic allow?">How many agents does Basic allow?</button><button type="button" data-question="Can I get a refund on an annual plan?">Can I get a refund on an annual plan?</button><button type="button" data-question="When is support open?">When is support open?</button><button type="button" data-question="Does Acme Desk support SAML SSO?">Does Acme Desk support SAML SSO?</button></div></aside>
+      <div class="panel chat"><div class="chat-head"><strong>Support assistant</strong><span class="badge" id="mode">Sample mode</span></div><div class="messages" id="messages" role="log" aria-live="polite"><div class="message assistant">Hi! Ask me about Acme Desk plans, exports, refunds, support hours, or data retention.</div></div><form class="chat-form" id="chat-form"><input id="question" aria-label="Your question" placeholder="Ask a support question…" autocomplete="off" required><button type="submit">Send</button></form></div></div>
+      <p class="note">Sample mode is a static preview, not an LLM response. Source labels refer to the fixture files in the repository.</p>
+      <details><summary>Connect a deployed backend</summary><p class="note">The backend must be hosted separately and allow this Pages origin in <code>CORS_ORIGINS</code>. Your JWT stays in this tab’s memory and is sent directly to the backend. Use a test account; close the tab to clear it.</p><div class="connect-grid"><label>API base URL<input id="api-url" type="url" placeholder="https://api.example.com" autocomplete="off"></label><label>JWT bearer token<input id="api-token" type="password" placeholder="Paste a test token" autocomplete="off"></label><button id="connect" type="button">Connect</button></div><p class="note" id="connection-status" role="status"></p></details>
+    </section>
+    <section class="features" id="how"><div class="panel feature"><div class="number">01 / INDEX</div><h3>Read the documents</h3><p>PDF, DOCX, text, Markdown, and HTML are parsed into searchable passages with page or document references.</p></div><div class="panel feature"><div class="number">02 / RETRIEVE</div><h3>Find relevant evidence</h3><p>Account-scoped vector search and term overlap select passages before a model drafts an answer.</p></div><div class="panel feature"><div class="number">03 / ANSWER</div><h3>Cite or hand off</h3><p>Answers include source references. When the available material cannot support a response, the assistant directs the customer to support.</p></div></section>
+  </main>
+  <footer><div class="shell"><span>Grounded · public prototype</span><span><a href="https://github.com/KingNonso/rag-base-cs-agent">Source code</a> · Fictional sample data</span></div></footer>
+  <script>
+    const examples = [
+      {match:/basic.*(agent|seat)|how many agents.*basic/i, answer:'The Basic plan allows three support agents.', source:'Acme Desk product guide', file:'product.md'},
+      {match:/pro.*(agent|seat)|how many agents.*pro/i, answer:'The Pro plan allows twenty support agents.', source:'Acme Desk product guide', file:'product.md'},
+      {match:/plan change|change plan|billing cycle/i, answer:'You can change plans in Settings > Billing. The change takes effect at the next billing cycle.', source:'Acme Desk product guide', file:'product.md'},
+      {match:/export|csv/i, answer:'Account administrators can export tickets as CSV from Reports > Export.', source:'Acme Desk product guide', file:'product.md'},
+      {match:/annual.*refund|refund.*annual/i, answer:'Annual subscriptions can be refunded within 30 days of purchase.', source:'Refund and security policy', file:'policy.txt'},
+      {match:/monthly.*refund|refund.*monthly/i, answer:'Monthly subscriptions are not refundable.', source:'Refund and security policy', file:'policy.txt'},
+      {match:/support.*(hours|open|time)|when is support/i, answer:'Support hours are Monday through Friday, 09:00 to 17:00 UTC. Critical incidents can be reported at any time through the emergency form in the help center.', source:'Refund and security policy', file:'policy.txt'},
+      {match:/retain|retention|after.*closure|data.*delet/i, answer:'Customer data is retained for 30 days after account closure, then deleted.', source:'Refund and security policy', file:'policy.txt'}
+    ];
+    const fallback = "I couldn't find a reliable answer in the available documents. Please contact support for help.";
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('question');
+    let backend = null;
+    let sessionId = null;
+    function addMessage(text, type) { const el = document.createElement('div'); el.className = 'message ' + type; el.textContent = text; messages.append(el); el.scrollIntoView({block:'nearest'}); }
+    function addSources(refs) { if (!refs.length) return; const wrap = document.createElement('div'); wrap.className = 'references'; refs.forEach(ref => { const button = document.createElement('button'); button.type = 'button'; button.textContent = '↗ ' + (ref.document || ref.source) + ' · ' + (ref.location || 'document'); button.title = ref.excerpt || ref.file || ''; button.onclick = () => alert(button.title || 'Source reference'); wrap.append(button); }); messages.append(wrap); }
+    document.getElementById('chat-form').addEventListener('submit', async event => { event.preventDefault(); const question = input.value.trim(); if (!question) return; input.value = ''; addMessage(question, 'user'); if (!backend) { const found = examples.find(example => example.match.test(question)); addMessage(found ? found.answer : fallback, 'assistant'); if (found) addSources([{source:found.source, file:found.file, location:'document'}]); return; } try { const response = await fetch(backend.url + '/v1/chat', {method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + backend.token}, body:JSON.stringify({message:question, session_id:sessionId})}); if (!response.ok) throw new Error('API returned ' + response.status); const result = await response.json(); sessionId = result.session_id; addMessage(result.answer, 'assistant'); addSources(result.references || []); } catch (error) { addMessage('Connection error: ' + error.message, 'assistant'); } });
+    document.querySelectorAll('[data-question]').forEach(button => button.addEventListener('click', () => { input.value = button.dataset.question; input.focus(); }));
+    document.getElementById('connect').addEventListener('click', () => { const url = document.getElementById('api-url').value.trim().replace(/\/+$/, ''); const token = document.getElementById('api-token').value.trim(); const status = document.getElementById('connection-status'); if (!url.startsWith('https://') || !token) { status.textContent = 'Enter an HTTPS API URL and a test JWT.'; return; } backend = {url, token}; sessionId = null; document.getElementById('api-token').value = ''; document.getElementById('mode').textContent = 'Live API'; status.textContent = 'Connected for this tab. Send a question to test the API.'; });
+  </script>
+</body>
+</html>

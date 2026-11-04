@@ -1,0 +1,12 @@
+[
+  {"question":"How many agents does Basic allow?","expected":"Three agents; cite product guide."},
+  {"question":"When does a plan change take effect?","expected":"Next billing cycle; cite product guide."},
+  {"question":"Can any user export tickets?","expected":"No, only account administrators; cite product guide."},
+  {"question":"What format is the ticket export?","expected":"CSV; cite product guide."},
+  {"question":"Can I get a refund for an annual subscription after two weeks?","expected":"Yes, within 30 days; cite policy."},
+  {"question":"Are monthly subscriptions refundable?","expected":"No; cite policy."},
+  {"question":"When is support open?","expected":"Monday through Friday 09:00–17:00 UTC; cite policy."},
+  {"question":"How long is data retained after closure?","expected":"30 days; cite policy."},
+  {"question":"Does Acme Desk support SAML SSO?","expected":"Abstain; not in documents."},
+  {"question":"What is the SLA for critical incidents?","expected":"Abstain; not in documents."}
+]
