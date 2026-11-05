@@ -1,12 +1,14 @@
 [
-  {"question":"How many agents does Basic allow?","expected":"Three agents; cite product guide."},
-  {"question":"When does a plan change take effect?","expected":"Next billing cycle; cite product guide."},
-  {"question":"Can any user export tickets?","expected":"No, only account administrators; cite product guide."},
-  {"question":"What format is the ticket export?","expected":"CSV; cite product guide."},
-  {"question":"Can I get a refund for an annual subscription after two weeks?","expected":"Yes, within 30 days; cite policy."},
-  {"question":"Are monthly subscriptions refundable?","expected":"No; cite policy."},
-  {"question":"When is support open?","expected":"Monday through Friday 09:00–17:00 UTC; cite policy."},
-  {"question":"How long is data retained after closure?","expected":"30 days; cite policy."},
-  {"question":"Does Acme Desk support SAML SSO?","expected":"Abstain; not in documents."},
-  {"question":"What is the SLA for critical incidents?","expected":"Abstain; not in documents."}
+  {"id": "q01", "category": "direct", "question": "How many agents does the Basic plan allow?", "expected_documents": ["product.md"], "key_facts": ["three"], "expected": "Three support agents.", "expected_abstain": false},
+  {"id": "q02", "category": "direct", "question": "Which plans include the Salesforce integration?", "expected_documents": ["faq.docx"], "key_facts": ["pro"], "expected": "Only the Pro plan.", "expected_abstain": false},
+  {"id": "q03", "category": "direct", "question": "How long are backups kept?", "expected_documents": ["security.pdf"], "key_facts": ["14 days"], "expected": "14 days; backups are taken every 24 hours.", "expected_abstain": false},
+  {"id": "q04", "category": "direct", "question": "How long is the free trial for new accounts?", "expected_documents": ["onboarding-scan.pdf"], "key_facts": ["21"], "expected": "21 days, on the Pro plan (scanned onboarding checklist).", "expected_abstain": false},
+  {"id": "q05", "category": "multi_passage", "question": "Can a regular agent export tickets, and what file format does the export use?", "expected_documents": ["product.md"], "key_facts": ["administrators", "csv"], "expected": "No, only account administrators can export; exports are CSV.", "expected_abstain": false},
+  {"id": "q06", "category": "multi_passage", "question": "How is my account and data protected? Mention sign-in options and encryption.", "expected_documents": ["faq.docx", "security.pdf"], "key_facts": ["two-factor", "aes-256"], "expected": "Two-factor authentication (admins can require it) and AES-256 encryption at rest with TLS in transit.", "expected_abstain": false},
+  {"id": "q07", "category": "multi_passage", "question": "I paid for an annual plan two weeks ago. Can I get a refund, and how long is my data kept after I close the account?", "expected_documents": ["policy.txt"], "key_facts": ["refund", "30 days"], "expected": "Yes, annual plans are refundable within 30 days; data is kept 30 days after closure, then deleted.", "expected_abstain": false},
+  {"id": "q08", "category": "ambiguous", "question": "How many seats do I get?", "expected_documents": ["product.md"], "key_facts": ["three", "twenty"], "expected": "Depends on the plan: Basic has three agents, Pro has twenty.", "expected_abstain": false},
+  {"id": "q09", "category": "absent", "question": "Does Acme Desk support SAML single sign-on?", "expected_documents": [], "key_facts": [], "expected": "Abstain; not in the documents.", "expected_abstain": true},
+  {"id": "q10", "category": "absent", "question": "What is the guaranteed response time SLA for critical incidents?", "expected_documents": [], "key_facts": [], "expected": "Abstain; the policy only says critical incidents can be reported at any time.", "expected_abstain": true},
+  {"id": "q11", "category": "conflicting", "question": "What are your support hours?", "expected_documents": ["policy.txt", "legacy-hours.html"], "key_facts": [], "expected": "Abstain; policy says 09:00–17:00 UTC but the 2023 contact page says 08:00–20:00 UTC.", "expected_abstain": true},
+  {"id": "q12", "category": "followup", "history": ["Which plans does Acme Desk offer?"], "question": "How many agents does the bigger one allow?", "expected_documents": ["product.md"], "key_facts": ["twenty"], "expected": "Pro allows twenty agents.", "expected_abstain": false}
 ]
